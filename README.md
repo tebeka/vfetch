@@ -1,4 +1,7 @@
 # vfetch - Fetch Go Package to "vendor" directory
+[![Travis](https://travis-ci.org/tebeka/vfetch.svg?branch=master)](https://travis-ci.org/tebeka/vfetch)
+
+[![GoDoc](https://godoc.org/github.com/tebeka/vfetch?status.svg)](http://godoc.org/github.com/tebeka/vfetch)
 
 ## What?
 vfetch is a simple tool to fetch a Go package with it's dependencies to `vendor`
