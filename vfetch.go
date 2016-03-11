@@ -80,7 +80,7 @@ func main() {
 	if err = os.Setenv("GOPATH", gopath); err != nil {
 		die("can't set GOPATH - %s", err)
 	}
-	// No sure this is needed by play nice
+	// No sure this is needed but play nice
 	defer func() {
 		os.Setenv("GOPATH", oldPath)
 	}()
