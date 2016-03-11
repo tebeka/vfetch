@@ -90,6 +90,7 @@ func main() {
 		die("can't 'go get %s' - %s", pkg, err)
 	}
 
+	// The trailing / is important
 	src := fmt.Sprintf("%s/src/", gopath)
 
 	// TODO: Find pure Go rsync package
