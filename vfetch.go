@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 )
@@ -38,8 +39,9 @@ func isDir(path string) (bool, error) {
 }
 
 func main() {
-	var showVersion bool
+	var showVersion, verbose bool
 
+	flag.BoolVar(&verbose, "verbose", false, "emit more noise")
 	flag.BoolVar(&showVersion, "version", false, "show version and exit")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "usage: %s PACKAGE\n", os.Args[0])
@@ -50,6 +52,11 @@ func main() {
 	if showVersion {
 		fmt.Printf("vfetch %s\n", Version)
 		os.Exit(0)
+	}
+
+	info := func(format string, v ...interface{}) {}
+	if verbose {
+		info = log.Printf
 	}
 
 	vendor := "vendor"
@@ -64,6 +71,7 @@ func main() {
 		die("can't find if 'vendor' exists - %s", err)
 	}
 	if !exists {
+		info("creating %s", vendor)
 		err = os.Mkdir(vendor, 0755)
 		if err != nil {
 			die("can't create %s - %s", vendor, err)
@@ -75,6 +83,7 @@ func main() {
 		die("can't create temp dir - %s", err)
 	}
 	defer os.RemoveAll(gopath)
+	info("GOPATH = %s", gopath)
 
 	oldPath := os.Getenv("GOPATH")
 	if err = os.Setenv("GOPATH", gopath); err != nil {
@@ -85,6 +94,7 @@ func main() {
 		os.Setenv("GOPATH", oldPath)
 	}()
 
+	info("go getting %s", pkg)
 	cmd := exec.Command("go", "get", pkg)
 	if err = cmd.Run(); err != nil {
 		die("can't 'go get %s' - %s", pkg, err)
@@ -93,6 +103,7 @@ func main() {
 	// The trailing / is important
 	src := fmt.Sprintf("%s/src/", gopath)
 
+	info("rsync from %s to %s", src, vendor)
 	// TODO: Find pure Go rsync package
 	cmd = exec.Command(
 		"rsync", "-a",
